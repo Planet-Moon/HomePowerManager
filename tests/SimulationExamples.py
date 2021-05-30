@@ -1,49 +1,30 @@
 import random
+from PowerSource import PowerSource
+from PowerSink import PowerSink
 
 
-class Source:
+class ExamplePowerSource(PowerSource):
     def __init__(self, name: str):
-        self.name = name
-
-    def __str__(self):
-        return str(self.__dict__)
+        super(ExamplePowerSource, self).__init__(name)
 
     @property
     def power(self):
         return random.randint(2000, 4000)
 
 
-class Sink:
+class ExamplePowerSink(PowerSink):
     def __init__(self, name: str):
-        self.name = name
+        super(ExamplePowerSink, self).__init__(name)
         self._request_power = random.randint(0, 4000)
-        self._allowed_power = 0
-        self._power_priority = 0
 
-    def __str__(self):
-        return str(self.__dict__)
+    def allow_power(self,power:float=0.0) -> bool:
+        rand = random.randint(0,9)
+        if rand > 5 or True:
+            self._allowed_power = power
+            return True
+        else:
+            return False
 
-    @property
-    def power_priority(self):
-        return self._power_priority
-
-    @power_priority.setter
-    def power_priority(self, priority):
-        self._power_priority = priority
-
-    @property
-    def allowed_power(self):
-        return self._allowed_power
-
-    @allowed_power.setter
-    def allowed_power(self, allowed_power):
-        self._allowed_power = allowed_power
-        print("power allowed: {} W".format(self._allowed_power))
-
-    @property
-    def request_power(self):
-        return self._request_power - self._allowed_power
-
-    @request_power.setter
-    def request_power(self, request_power):
-        self._request_power = request_power
+class ExampleSink(PowerSink):
+    def __init__(self, name: str):
+        super().__init__(name=name)

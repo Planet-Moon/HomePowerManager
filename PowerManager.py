@@ -1,4 +1,7 @@
 import copy
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def remove_from_list(list, start: int = 0, end: int = -1) -> list:
@@ -54,12 +57,14 @@ class PowerManager:
 
     def distribute(self):
         power = self.available_power - self.power_grid
-        print("available power: {} W".format(power))
+        logger.info("available power: {} W".format(power))
         for i in self._sinks:
-            if power > i.request_power:
-                self._power_distribution[i.name] = i.request_power
-            else:
-                self._power_distribution[i.name] = 0
-            i.available_power = self._power_distribution[i.name]
-            power -= i.available_power
-        print("remaining power: {} W".format(power))
+            request_power = i.request_power
+            if power >= request_power:
+                if i.allow_power(request_power):
+                    self._power_distribution[i.name] = request_power
+                    power -= request_power
+                    continue
+            self._power_distribution[i.name] = 0
+
+        logger.info("remaining power: {} W".format(power))
