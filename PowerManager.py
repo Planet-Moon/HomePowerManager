@@ -11,7 +11,7 @@ def remove_from_list(list, start: int = 0, end: int = -1) -> list:
     return list
 
 
-class PowerManager:
+class PowerManager(object):
     def __init__(self, sources: list = [], sinks: list = []):
         self._sources = sources
         self._sinks = sinks

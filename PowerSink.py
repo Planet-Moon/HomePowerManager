@@ -48,4 +48,3 @@ class PowerSink:
     @request_power.setter
     def request_power(self, request_power):
         self._request_power = request_power
-        
