@@ -4,7 +4,8 @@ from SMA_StorageBoy import SMA_StorageBoy
 class BatteryManager:
     supported_inverters = (SMA_StorageBoy)  # add supported_inverters here
 
-    def __init__(self, inverters: list = []) -> None:
+    def __init__(self, inverters: list = [], name:str="Batterymanager") -> None:
+        self.name = name
         self._inverters = []
         for i in inverters:
             self.addInverter(i)

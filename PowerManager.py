@@ -60,10 +60,13 @@ class PowerManager(object):
         logger.info("available power: {} W".format(power))
         for i in self._sinks:
             request_power = i.request_power
-            if power >= request_power:
-                if i.allow_power(request_power):
-                    self._power_distribution[i.name] = request_power
-                    power -= request_power
+            grant_power = request_power.max
+            if power >= request_power.min:
+                if power <= grant_power:
+                    grant_power = power
+                if i.allow_power(grant_power):
+                    self._power_distribution[i.name] = grant_power
+                    power -= grant_power
                     continue
             self._power_distribution[i.name] = 0
 
