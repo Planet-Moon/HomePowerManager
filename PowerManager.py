@@ -1,5 +1,7 @@
 import copy
 import logging
+import threading
+from time import sleep
 
 logger = logging.getLogger(__name__)
 
@@ -9,6 +11,20 @@ def remove_from_list(list, start: int = 0, end: int = -1) -> list:
         end = len(list)
     del list[start:end]
     return list
+
+class PowerManagerThread(threading.Thread):
+    def __init__(self, power_manager, update_period = 1):
+        self.power_manager = power_manager
+        self.update_period = update_period
+        self.enable = True
+        pass
+
+    def run(self):
+        logger.info("PowerManager thread started")
+        while self.enable:
+            self.power_manager.distribute()
+            sleep(self.update_period)
+        logger.info("PowerManager thread stopped")
 
 
 class PowerManager(object):
