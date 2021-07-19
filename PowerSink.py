@@ -55,13 +55,16 @@ class PowerSink:
         return str(self.__dict__)
 
     @property
+    def using_power(self):
+        return self._allowed_power
+
+    @property
     def allowed_power(self):
         return self._allowed_power
 
     @allowed_power.setter
     def allowed_power(self, allowed_power):
         self._allowed_power = allowed_power
-        logger.info("power allowed: {} W".format(self._allowed_power))
 
     def allow_power(self,power:float=0.0) -> bool:
         """This is used to check if power ready to be used
@@ -73,13 +76,14 @@ class PowerSink:
             bool: True if power can be used
         """
         self._allowed_power = power
+        logger.info("power allowed: {} W".format(self._allowed_power))
         return True
 
     @property
     def request_power(self):
         return Power_range(
-            self._request_power.min - self._allowed_power,
-            self._request_power.max - self._allowed_power)
+            self._request_power.min,
+            self._request_power.max)
 
     @request_power.setter
     def request_power(self, value):

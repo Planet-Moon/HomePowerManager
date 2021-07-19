@@ -31,8 +31,10 @@ class PowerManager(object):
     def __init__(self, sources: list = [], sinks: list = []):
         self._sources = sources
         self._sinks = sinks
+        self.power_distribution = {}
+        for i in sinks:
+            self.power_distribution[i.name] = i.using_power
         self._power_grid = lambda: 0
-        self._power_distribution = {}
 
     @property
     def sources(self) -> list:
@@ -52,6 +54,7 @@ class PowerManager(object):
     @sinks.setter
     def sinks(self, sink):
         self._sinks.append(sink)
+        self.power_distribution[sink.name] = sink.using_power
 
     def remove_sinks(self, start: int = 0, end: int = -1):
         self._sinks = remove_from_list(self._sinks, start, end)
@@ -71,19 +74,30 @@ class PowerManager(object):
             power += getattr(i, "power", 0)
         return power
 
-    def distribute(self):
+    def distribute(self) -> float:
         power = self.available_power - self.power_grid
         logger.info("available power: {} W".format(power))
         for i in self._sinks:
-            request_power = i.request_power
-            grant_power = request_power.max
-            if power >= request_power.min:
-                if power <= grant_power:
-                    grant_power = power
+            request_power = copy.copy(i.request_power)
+            grant_power = copy.copy(power)
+            # Versuche einzuschalten bei genügend Leistung
+            if grant_power >= request_power.min and request_power.max > 0:
+                if grant_power > request_power.max:
+                    grant_power = request_power.max
+                # Einschaltversuch
                 if i.allow_power(grant_power):
-                    self._power_distribution[i.name] = grant_power
-                    power -= grant_power
-                    continue
-            self._power_distribution[i.name] = 0
+                    logger.info(i.name+": Turn on Success")
+                else:
+                    print("here")
+                # Speichern der Leistungsverteilung
+                self.power_distribution[i.name] = i.using_power
+                # Abzug der verwendeten Leistung
+                power -= i.using_power
+            elif i.allow_power(0): # Versuche auszuschalten
+                self.power_distribution[i.name] = 0
+            else: # Berechne Verlust bei unerfolgreichem Ausschalten
+                power -= self.power_distribution.get(i.name, request_power.min)
 
         logger.info("remaining power: {} W".format(power))
+        logger.info("---------------------")
+        return power
