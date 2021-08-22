@@ -17,6 +17,7 @@ class PowerManagerThread(threading.Thread):
         self.power_manager = power_manager
         self.update_period = update_period
         self.enable = True
+        threading.Thread.__init__(self, name="power_manager")
         pass
 
     def run(self):
@@ -61,6 +62,15 @@ class PowerManager(object):
 
     @property
     def power_grid(self) -> float:
+        """Function to calulate the power from the grid.
+        Positive if more power is drawn then generated.
+        If more power is generated set to negative value.
+
+        'lambda: power draw - power generation'
+
+        Returns:
+            float: power draw
+        """
         return self._power_grid()
 
     @power_grid.setter
