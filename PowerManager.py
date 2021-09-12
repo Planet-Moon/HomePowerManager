@@ -36,6 +36,7 @@ class PowerManager(object):
         for i in sinks:
             self.power_distribution[i.name] = i.using_power
         self._power_grid = lambda: 0
+        self.power_buffer = 0
 
     @property
     def sources(self) -> list:
@@ -85,7 +86,7 @@ class PowerManager(object):
         return power
 
     def distribute(self) -> float:
-        power = self.available_power - self.power_grid
+        power = self.available_power - self.power_grid - self.power_buffer
         logger.info("available power: {} W".format(power))
         for i in self._sinks:
             request_power = copy.copy(i.request_power)
