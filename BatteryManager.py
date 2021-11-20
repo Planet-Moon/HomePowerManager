@@ -1,12 +1,17 @@
 from SMA_StorageBoy import SMA_StorageBoy
 
+class InverterModel:
+    def __init__(self, inverter:SMA_StorageBoy, needed_power:float=0, available_power:float=0):
+        self.device:SMA_StorageBoy = inverter
+        self.needed_power:float = needed_power
+        self.available_power:float = available_power
 
 class BatteryManager:
     supported_inverters = (SMA_StorageBoy)  # add supported_inverters here
 
-    def __init__(self, inverters: list = [], name:str="Batterymanager") -> None:
-        self.name = name
-        self._inverters = []
+    def __init__(self, inverters: list[SMA_StorageBoy] = [], name:str="Batterymanager") -> None:
+        self.name:str = name
+        self._inverters:list[InverterModel] = []
         for i in inverters:
             self.addInverter(i)
 
@@ -23,7 +28,7 @@ class BatteryManager:
     def inverters(self) -> list:
         return self._inverters
 
-    def addInverter(self, inverter) -> None:
+    def addInverter(self, inverter:SMA_StorageBoy) -> None:
         """Add inverter to BatteryManager
 
         Args:
@@ -33,11 +38,7 @@ class BatteryManager:
             TypeError: When inverter is not in the tuple of supported inverters
         """
         if isinstance(inverter, self.supported_inverters):
-            class InverterModel:
-                def __init__(self, inverter, needed_power=0, available_power=0):
-                    self.device = inverter
-                    self.needed_power = needed_power
-                    self.available_power = available_power
+
 
             self._inverters.append(InverterModel(inverter))
         else:

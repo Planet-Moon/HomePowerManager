@@ -1,32 +1,33 @@
 import logging
+from typing import Union
 
 logger = logging.getLogger(__name__)
 
 class Power_range(object):
-    def __init__(self,min=0,max=0):
-        self._min = min
-        self._max = max
+    def __init__(self,min:float=0,max:float=0):
+        self._min:float = min
+        self._max:float = max
 
     def __str__(self):
         return "{'min':"+str(self._min)+", 'max':"+str(self._max)+"}"
 
     @property
-    def min(self):
+    def min(self) -> float:
         return self._min
 
     @min.setter
-    def min(self, value):
+    def min(self, value:float):
         if value <= self._max and value >= 0:
             self._min = value
         else:
             self._min = self._max
 
     @property
-    def max(self):
+    def max(self)-> float:
         return self._max
 
     @max.setter
-    def max(self, value):
+    def max(self, value:float):
         if value >= self._min and value >= 0:
             self._max = value
         else:
@@ -47,23 +48,23 @@ class Power_range(object):
 
 class PowerSink:
     def __init__(self, name: str):
-        self.name = name
-        self._request_power = Power_range()
-        self._allowed_power = 0
+        self.name:str = name
+        self._request_power:Power_range = Power_range()
+        self._allowed_power:float = 0
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.__dict__)
 
     @property
-    def using_power(self):
+    def using_power(self) -> float:
         return self._allowed_power
 
     @property
-    def allowed_power(self):
+    def allowed_power(self) -> float:
         return self._allowed_power
 
     @allowed_power.setter
-    def allowed_power(self, allowed_power):
+    def allowed_power(self, allowed_power: float):
         self._allowed_power = allowed_power
 
     def allow_power(self,power:float=0.0) -> bool:
@@ -80,13 +81,13 @@ class PowerSink:
         return True
 
     @property
-    def request_power(self):
+    def request_power(self) -> Power_range:
         return Power_range(
             self._request_power.min,
             self._request_power.max)
 
     @request_power.setter
-    def request_power(self, value):
+    def request_power(self, value:Union[float,list[int],tuple[int]]):
         if isinstance(value,(list, tuple)):
             self._request_power.max = value[1]
             self._request_power.min = value[0]
